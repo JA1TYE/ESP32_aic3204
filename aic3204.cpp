@@ -326,6 +326,150 @@ esp_err_t aic3204_set_input_volume(aic3204_channel_t ch,float level){
     return ESP_OK;
 }
 
+esp_err_t aic3204_set_adc_routing(aic3204_adc_input_t in_terminal,int routing_mask,aic3204_adc_gain_t gain){
+    //this function does not accept AIC3204_xx_BOTH 
+    if(in_terminal >= AIC3204_IN1_BOTH){
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    //Select Page 1
+    aic3204_write_reg(0x00,0x01);
+    uint8_t tmp;
+
+    if(in_terminal == AIC3204_IN1_L){
+        if((routing_mask & (~AIC3204_IN1_L_VALID_MASK)) != 0){
+            return ESP_ERR_INVALID_ARG;
+        }
+
+        //Read current value
+        tmp = aic3204_read_reg(0x34);
+        tmp &= 0x3f;
+        if(routing_mask & AIC3204_L_P){
+            tmp |= (gain << 6);
+        }
+        aic3204_write_reg(0x34,tmp);
+
+        //Read current value
+        tmp = aic3204_read_reg(0x39);
+        tmp &= 0xcf;
+        if(routing_mask & AIC3204_R_N){
+            tmp |= (gain << 4);
+        }
+        aic3204_write_reg(0x39,tmp);
+    }
+
+    if(in_terminal == AIC3204_IN1_R){
+        if((routing_mask & (~AIC3204_IN1_R_VALID_MASK)) != 0){
+            return ESP_ERR_INVALID_ARG;
+        }
+
+        //Read current value
+        tmp = aic3204_read_reg(0x34);
+        tmp &= 0xfc;
+        if(routing_mask & AIC3204_L_P){
+            tmp |= gain;
+        }
+        aic3204_write_reg(0x34,tmp);
+
+        //Read current value
+        tmp = aic3204_read_reg(0x37);
+        tmp &= 0x3f;
+        if(routing_mask & AIC3204_R_P){
+            tmp |= (gain << 6);
+        }
+        aic3204_write_reg(0x37,tmp);
+    }
+
+    if(in_terminal == AIC3204_IN2_L){
+        if((routing_mask & (~AIC3204_IN2_L_VALID_MASK)) != 0){
+            return ESP_ERR_INVALID_ARG;
+        }
+
+        //Read current value
+        tmp = aic3204_read_reg(0x34);
+        tmp &= 0xcf;
+        if(routing_mask & AIC3204_L_P){
+            tmp |= (gain << 4);
+        }
+        aic3204_write_reg(0x34,tmp);
+        
+        //Read current value
+        tmp = aic3204_read_reg(0x37);
+        tmp &= 0xfc;
+        if(routing_mask & AIC3204_R_P){
+            tmp |= gain;
+        }
+        aic3204_write_reg(0x37,tmp);
+    }
+
+    if(in_terminal == AIC3204_IN2_R){
+        if((routing_mask & (~AIC3204_IN2_R_VALID_MASK)) != 0){
+            return ESP_ERR_INVALID_ARG;
+        }
+
+        //Read current value
+        tmp = aic3204_read_reg(0x36);
+        tmp &= 0xcf;
+        if(routing_mask & AIC3204_L_N){
+            tmp |= (gain << 4);
+        }
+        aic3204_write_reg(0x36,tmp);
+        
+        //Read current value
+        tmp = aic3204_read_reg(0x37);
+        tmp &= 0xcf;
+        if(routing_mask & AIC3204_R_P){
+            tmp |= (gain << 4);
+        }
+        aic3204_write_reg(0x37,tmp);
+    }
+
+    if(in_terminal == AIC3204_IN3_L){
+        if((routing_mask & (~AIC3204_IN3_L_VALID_MASK)) != 0){
+            return ESP_ERR_INVALID_ARG;
+        }
+
+        //Read current value
+        tmp = aic3204_read_reg(0x34);
+        tmp &= 0xf3;
+        if(routing_mask & AIC3204_L_P){
+            tmp |= (gain << 2);
+        }
+        aic3204_write_reg(0x34,tmp);
+
+        //Read current value
+        tmp = aic3204_read_reg(0x39);
+        tmp &= 0xf3;
+        if(routing_mask & AIC3204_R_N){
+            tmp |= (gain << 2);
+        }
+        aic3204_write_reg(0x39,tmp);
+    }
+
+    if(in_terminal == AIC3204_IN3_R){
+        if((routing_mask & (~AIC3204_IN3_R_VALID_MASK)) != 0){
+            return ESP_ERR_INVALID_ARG;
+        }
+
+        //Read current value
+        tmp = aic3204_read_reg(0x36);
+        tmp &= 0xf3;
+        if(routing_mask & AIC3204_L_N){
+            tmp |= (gain << 2);
+        }
+        aic3204_write_reg(0x36,tmp);
+
+        //Read current value
+        tmp = aic3204_read_reg(0x37);
+        tmp &= 0xf3;
+        if(routing_mask & AIC3204_R_P){
+            tmp |= (gain << 2);
+        }
+        aic3204_write_reg(0x37,tmp);
+    }
+    return ESP_OK;
+}
+
 esp_err_t aic3204_reset(void){
     esp_err_t ret;
     ret = gpio_set_level((gpio_num_t)SUCODEC_CODEC_RESET,0);
