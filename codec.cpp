@@ -69,7 +69,6 @@ esp_err_t sucodec_gpio_init(void){
     if(ret != ESP_OK)return ret;
 
     //Configure SUCODEC_AMP_SHUTDOWN as Output
-    gpio_config_t io_conf;
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_OUTPUT;
     io_conf.pin_bit_mask = (1 << SUCODEC_AMP_SHUTDOWN);
@@ -79,10 +78,9 @@ esp_err_t sucodec_gpio_init(void){
     if(ret != ESP_OK)return ret;
 
     //Configure SUCODEC_HPDET as Input
-    gpio_config_t io_conf;
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_INPUT;
-    io_conf.pin_bit_mask = (1 << SUCODEC_HP_DETECT);
+    io_conf.pin_bit_mask = ((uint64_t)1 << SUCODEC_HP_DETECT);
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     ret = gpio_config(&io_conf);
