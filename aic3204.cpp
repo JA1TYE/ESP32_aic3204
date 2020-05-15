@@ -561,6 +561,7 @@ esp_err_t aic3204_init(void){
     aic3204_write_reg(0x09,0x3c);
     //Wait for 2.5 sec for soft stepping to take effect
     //Else read Page 1, Register 63d, D(7:6). When = “11” soft-stepping is complete
+    vTaskDelay(2500/portTICK_RATE_MS);
     // Set MicPGA startup delay to 3.1ms
     aic3204_write_reg(0x47,0x32);
     // Set the REF charging time to 40ms

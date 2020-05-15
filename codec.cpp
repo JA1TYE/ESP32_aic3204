@@ -25,15 +25,6 @@ esp_err_t sucodec_i2c_init(void){
 
 esp_err_t sucodec_i2s_init(void){
     esp_err_t ret;
-    //Configure SUCODEC_CODEC_RESET as Output
-    gpio_config_t io_conf;
-    io_conf.intr_type = GPIO_INTR_DISABLE;
-    io_conf.mode = GPIO_MODE_OUTPUT;
-    io_conf.pin_bit_mask = (1 << SUCODEC_CODEC_RESET);
-    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-    ret = gpio_config(&io_conf);
-    if(ret != ESP_OK)return ret;
 
     //Configure I2S_NUM_0 as Full-Duplex mode
     i2s_config_t i2s_config;
@@ -64,12 +55,74 @@ esp_err_t sucodec_i2s_init(void){
     return ret;
 }
 
+esp_err_t sucodec_gpio_init(void){
+    esp_err_t ret;
+
+    //Configure SUCODEC_CODEC_RESET as Output
+    gpio_config_t io_conf;
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.pin_bit_mask = (1 << SUCODEC_CODEC_RESET);
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    ret = gpio_config(&io_conf);
+    if(ret != ESP_OK)return ret;
+
+    //Configure SUCODEC_AMP_SHUTDOWN as Output
+    gpio_config_t io_conf;
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.pin_bit_mask = (1 << SUCODEC_AMP_SHUTDOWN);
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    ret = gpio_config(&io_conf);
+    if(ret != ESP_OK)return ret;
+
+    //Configure SUCODEC_HPDET as Input
+    gpio_config_t io_conf;
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_INPUT;
+    io_conf.pin_bit_mask = (1 << SUCODEC_HP_DETECT);
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    ret = gpio_config(&io_conf);
+    if(ret != ESP_OK)return ret;
+
+    ret = gpio_set_level((gpio_num_t)SUCODEC_CODEC_RESET,0);
+    if(ret != ESP_OK)return ret;
+    
+    ret = gpio_set_level((gpio_num_t)SUCODEC_AMP_SHUTDOWN,0);
+    if(ret != ESP_OK)return ret;
+
+    return ret;
+}
+
+esp_err_t sucodec_set_amp_mute(bool value){
+    esp_err_t ret = ESP_OK;
+    if(value == true){
+        ret = gpio_set_level((gpio_num_t)SUCODEC_AMP_SHUTDOWN,0);
+    }
+    else{
+        ret = gpio_set_level((gpio_num_t)SUCODEC_AMP_SHUTDOWN,1);
+    }
+    return ret;
+}
+
+bool sucodec_is_hp_detected(void){
+    if(gpio_get_level((gpio_num_t)SUCODEC_HP_DETECT) == 0){
+        return true;
+    }
+    return false;
+}
+
 esp_err_t sucodec_aic3204_init(void){
     return aic3204_init();
 }
 
 esp_err_t sucodec_init(void){
     esp_err_t ret;
+    ret = sucodec_gpio_init();
+    if(ret != ESP_OK)return ret;
     ret = sucodec_i2c_init();
     if(ret != ESP_OK)return ret;
     ret = sucodec_i2s_init();
