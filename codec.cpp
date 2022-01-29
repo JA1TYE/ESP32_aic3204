@@ -33,7 +33,7 @@ esp_err_t sucodec_i2s_init(void){
     i2s_config.sample_rate = SUCODEC_I2S_SAMPLE_RATE_HZ;
     i2s_config.bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT;
     i2s_config.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT;//2-channels
-    i2s_config.communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S);
+    i2s_config.communication_format = I2S_COMM_FORMAT_STAND_I2S;
     i2s_config.dma_buf_count = 8;
     i2s_config.dma_buf_len = 64;//Unit is [samples], not [bytes]! 
     i2s_config.use_apll = true;
