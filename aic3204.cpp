@@ -482,6 +482,8 @@ esp_err_t aic3204_set_micbias(aic3204_micbias_voltage_t voltage,aic3204_micbias_
     tmp |= ((uint8_t)voltage) << 4;
     tmp |= ((uint8_t)src) << 3;
 
+    //Write Settings
+    aic3204_write_reg(0x33,tmp);
     return ESP_OK;
 }
 
