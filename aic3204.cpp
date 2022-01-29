@@ -470,6 +470,21 @@ esp_err_t aic3204_set_adc_routing(aic3204_adc_input_t in_terminal,int routing_ma
     return ESP_OK;
 }
 
+esp_err_t aic3204_set_micbias(aic3204_micbias_voltage_t voltage,aic3204_micbias_source_t src,bool value){
+    //Select Page 1
+    aic3204_write_reg(0x00,0x01);
+    uint8_t tmp = 0;
+    
+    if(value == true){
+        tmp |= 0x40;
+    }
+
+    tmp |= ((uint8_t)voltage) << 4;
+    tmp |= ((uint8_t)src) << 3;
+
+    return ESP_OK;
+}
+
 esp_err_t aic3204_reset(void){
     esp_err_t ret;
     ret = gpio_set_level((gpio_num_t)SUCODEC_CODEC_RESET,0);
