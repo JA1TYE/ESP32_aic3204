@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/i2c.h"
@@ -7,9 +8,11 @@
 #include "esp_err.h"
 #include "aic3204.h"
 #include "codec.h"
+#include "esp_log.h"
 
 esp_err_t sucodec_i2c_init(void){ 
     i2c_config_t conf;
+    memset(&conf,'\0',sizeof(i2c_config_t));
     conf.mode = I2C_MODE_MASTER;
     conf.sda_io_num = SUCODEC_I2C_SDA_NUM;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
@@ -28,7 +31,7 @@ esp_err_t sucodec_i2s_init(void){
 
     //Configure I2S_NUM_0 as Full-Duplex mode
     i2s_config_t i2s_config;
-
+    memset(&i2s_config,'\0',sizeof(i2s_config_t));
     i2s_config.mode = (i2s_mode_t)(I2S_MODE_TX | I2S_MODE_RX | I2S_MODE_MASTER);
     i2s_config.sample_rate = SUCODEC_I2S_SAMPLE_RATE_HZ;
     i2s_config.bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT;
@@ -41,7 +44,7 @@ esp_err_t sucodec_i2s_init(void){
     i2s_config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;//Interrupt level 1
 
     i2s_pin_config_t pin_config;
-
+    memset(&pin_config,'\0',sizeof(i2s_pin_config_t));
     pin_config.bck_io_num = SUCODEC_I2S_BCLK_NUM;
     pin_config.ws_io_num = SUCODEC_I2S_WCLK_NUM;
     pin_config.data_out_num = SUCODEC_I2S_DOUT_NUM;
