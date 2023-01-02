@@ -50,6 +50,18 @@ typedef enum {
     AIC3204_IN_NC = 0
 }aic3204_adc_gain_t;
 
+typedef enum {
+    AIC3204_MICBIAS_1V04_1V25 = 0,
+    AIC3204_MICBIAS_1V425_1V7 = 1,
+    AIC3204_MICBIAS_2V075_2V5 = 2,
+    AIC3204_MICBIAS_SUPPLY = 3
+}aic3204_micbias_voltage_t;
+
+typedef enum {
+    AIC3204_MICBIAS_POWER_AVDD = 0,
+    AIC3204_MICBIAS_POWER_LDOIN = 1
+}aic3204_micbias_source_t;
+
 const int AIC3204_IN1_L_VALID_MASK = AIC3204_L_P | AIC3204_R_N;
 const int AIC3204_IN1_R_VALID_MASK = AIC3204_L_P | AIC3204_R_P;
 const int AIC3204_IN2_L_VALID_MASK = AIC3204_L_P | AIC3204_R_P;
@@ -65,6 +77,7 @@ esp_err_t aic3204_set_line_out_volume(aic3204_channel_t ch,float level);
 esp_err_t aic3204_set_dac_digital_volume(aic3204_channel_t ch,float level);
 esp_err_t aic3204_set_input_volume(aic3204_channel_t ch,float level);
 esp_err_t aic3204_set_adc_routing(aic3204_adc_input_t in_terminal,int routing_mask,aic3204_adc_gain_t gain);
+esp_err_t aic3204_set_micbias(aic3204_micbias_voltage_t voltage,aic3204_micbias_source_t src,bool value);
 
 #ifdef __cplusplus
 }
