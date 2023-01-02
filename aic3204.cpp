@@ -15,7 +15,7 @@ esp_err_t aic3204_write_reg(uint8_t addr,uint8_t data){
     i2c_master_write_byte(cmd, addr, true);
     i2c_master_write_byte(cmd, data, true);
     i2c_master_stop(cmd);
-    esp_err_t ret = i2c_master_cmd_begin(SUCODEC_I2C_PORT, cmd, 50 / portTICK_RATE_MS);
+    esp_err_t ret = i2c_master_cmd_begin(SUCODEC_I2C_PORT, cmd, 50 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return ret;
 }
@@ -30,7 +30,7 @@ uint8_t aic3204_read_reg(uint8_t addr){
     i2c_master_write_byte(cmd, AIC3204_ADDR | SUCODEC_I2C_READ, true);
     i2c_master_read_byte(cmd, &value, I2C_MASTER_LAST_NACK);
     i2c_master_stop(cmd);
-    i2c_master_cmd_begin(SUCODEC_I2C_PORT, cmd, 50 / portTICK_RATE_MS);
+    i2c_master_cmd_begin(SUCODEC_I2C_PORT, cmd, 50 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return value;
 }
@@ -474,10 +474,10 @@ esp_err_t aic3204_reset(void){
     esp_err_t ret;
     ret = gpio_set_level((gpio_num_t)SUCODEC_CODEC_RESET,0);
     if(ret != ESP_OK)return ret;
-    vTaskDelay(100/portTICK_RATE_MS);
+    vTaskDelay(100/portTICK_PERIOD_MS);
     ret = gpio_set_level((gpio_num_t)SUCODEC_CODEC_RESET,1);
     if(ret != ESP_OK)return ret;
-    vTaskDelay(10/portTICK_RATE_MS);
+    vTaskDelay(10/portTICK_PERIOD_MS);
     return ret;
 }
 
@@ -487,7 +487,7 @@ esp_err_t aic3204_init(void){
     aic3204_write_reg(0x00,0x00);
     //Software Reset
     aic3204_write_reg(0x01,0x01);
-    vTaskDelay(10/portTICK_RATE_MS);
+    vTaskDelay(10/portTICK_PERIOD_MS);
     /*---Clock Settings---*/
     //Select CODEC_CLKIN = MCLK
     aic3204_write_reg(0x19,0x00);
@@ -561,7 +561,7 @@ esp_err_t aic3204_init(void){
     aic3204_write_reg(0x09,0x3c);
     //Wait for 2.5 sec for soft stepping to take effect
     //Else read Page 1, Register 63d, D(7:6). When = “11” soft-stepping is complete
-    vTaskDelay(2500/portTICK_RATE_MS);
+    vTaskDelay(2500/portTICK_PERIOD_MS);
     // Set MicPGA startup delay to 3.1ms
     aic3204_write_reg(0x47,0x32);
     // Set the REF charging time to 40ms
